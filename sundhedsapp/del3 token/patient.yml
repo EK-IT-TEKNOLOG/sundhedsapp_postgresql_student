@@ -1,0 +1,26 @@
+patients:
+  id:
+    1:
+      age: 34
+      allergies: false
+      blood_type: O+
+      first_name: Kevin
+      last_name: Holm
+    2:
+      age: 66
+      allergies: Peanuts
+      blood_type: A+
+      first_name: Lone
+      last_name: Kellerman
+    3:
+      age: 27
+      allergies: Strawberry
+      bloodtype: B-
+      first_name: Lars
+      last_name: Larsson
+    4:
+      age: 34
+      allergies: 'No'
+      bloodtype: O-
+      first_name: kevin
+      last_name: holm
