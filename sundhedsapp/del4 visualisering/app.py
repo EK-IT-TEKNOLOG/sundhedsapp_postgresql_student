@@ -1,15 +1,14 @@
-import yaml
-from flask import current_app, render_template
-from apiflask import APIFlask, Schema, HTTPTokenAuth, abort
-from apiflask.fields import Integer, String
-from authlib.jose import jwt, JoseError
-import secrets 
-
-# https://www.geeksforgeeks.org/python/create-a-bar-chart-from-a-dataframe-with-plotly-and-flask/
-import pandas as pd
 import json
+import secrets
+
+import pandas as pd
 import plotly
-import plotly.express as px
+import plotly.graph_objects as go
+import yaml
+from apiflask import APIFlask, HTTPTokenAuth, Schema, abort
+from apiflask.fields import Integer, String
+from authlib.jose import JoseError, jwt
+from flask import current_app, render_template
 
 app = APIFlask(__name__)
 auth = HTTPTokenAuth(scheme="Bearer")
@@ -117,18 +116,34 @@ def bar_with_plotly():
         print(p.get('patients').get('id').get(patient))
 
         inner_list.append(p.get('patients').get('id').get(patient).get("first_name"))
-        inner_list.append(p.get('patients').get('id').get(patient).get("age"))
+        inner_list.append( int(p.get('patients').get('id').get(patient).get("age")))
         inner_list.append(p.get('patients').get('id').get(patient).get("blood_type"))
         patient_list.append(inner_list)
     print(patient_list)
     # Convert list to dataframe and assign column values
-    df = pd.DataFrame(patient_list,
-                      columns=['Name', 'Age', 'Blood type'],
-                      index=['a', 'b', 'c', 'd'])
-    
-    # Create Bar chart
-    fig = px.bar(df, x='Name', y='Age', color='Blood type', barmode='group')
-    
+    df = pd.DataFrame(
+        patient_list,
+        columns=['Name', 'Age', 'Blood type']
+    )
+    colors = {
+    "O+": "blue",
+    "A+": "red",
+    "B-": "green",
+    "O-": "purple"
+    }
+
+    fig = go.Figure()
+
+    for _, row in df.iterrows():
+        fig.add_bar(
+            x=[row["Name"]],
+            y=[int(row["Age"])],
+            name=row["Blood type"],
+            text=row["Blood type"],
+            textposition="outside",
+            marker_color=colors.get(row["Blood type"], "gray")
+        )
+    print(fig.to_dict()["data"])
     # Create graphJSON
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     
